@@ -32,7 +32,7 @@ MIT and well maintained, but:
   and there is no notion of owner (variant → product) for history cards.
 
 Decision: **own lightweight listener**, one table, built for Sylius (resources, translations,
-owners, grid, Twig hooks). About 1,000 lines of PHP.
+owners, grid, Twig hooks).
 
 ## 2. Design
 
