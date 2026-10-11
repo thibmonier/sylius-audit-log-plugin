@@ -7,9 +7,6 @@ namespace Tmonier\SyliusAuditLogPlugin\Repository;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Tmonier\SyliusAuditLogPlugin\Entity\AuditLogEntryInterface;
 
-/**
- * @extends EntityRepository<AuditLogEntryInterface>
- */
 class AuditLogEntryRepository extends EntityRepository implements AuditLogEntryRepositoryInterface
 {
     public function findForOwner(string $ownerType, string $ownerId, int $limit): array
@@ -73,13 +70,14 @@ class AuditLogEntryRepository extends EntityRepository implements AuditLogEntryR
                 break;
             }
 
-            $deleted += (int) $this->createQueryBuilder('o')
+            $result = $this->createQueryBuilder('o')
                 ->delete()
                 ->andWhere('o.id IN (:ids)')
                 ->setParameter('ids', $ids)
                 ->getQuery()
                 ->execute()
             ;
+            $deleted += is_int($result) ? $result : count($ids);
         } while (count($ids) === $batchSize);
 
         return $deleted;

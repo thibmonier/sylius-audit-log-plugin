@@ -22,12 +22,14 @@ final class AuditedResourceRegistryTest extends TestCase
             'any_channel' => ['class' => Channel::class],
         ]);
 
-        self::assertSame('product', $registry->match(new Product())?->name);
-        self::assertSame(['position'], $registry->match(new Product())?->ignoredFields);
+        $product = $registry->match(new Product());
+        self::assertNotNull($product);
+        self::assertSame('product', $product->name);
+        self::assertSame(['position'], $product->ignoredFields);
         self::assertSame('channel', $registry->match(new Channel())?->name);
         self::assertNull($registry->match(new Taxon()));
         self::assertNull($registry->match(new Taxon()), 'Cached negative match');
-        self::assertSame(ProductInterface::class, $registry->get('product')?->class);
+        self::assertSame(ProductInterface::class, $registry->get('product')->class ?? null);
         self::assertNull($registry->get('unknown'));
         self::assertSame(['product', 'channel', 'any_channel'], array_keys($registry->all()));
     }

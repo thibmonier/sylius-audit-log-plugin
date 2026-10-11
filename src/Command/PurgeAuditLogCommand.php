@@ -55,8 +55,8 @@ final class PurgeAuditLogCommand extends Command
             return Command::INVALID;
         }
 
-        $batchSize = (int) $input->getOption('batch-size');
-        if ($batchSize < 1) {
+        $batchSize = filter_var($input->getOption('batch-size'), \FILTER_VALIDATE_INT);
+        if (false === $batchSize || $batchSize < 1) {
             $io->error('The batch size must be a positive number.');
 
             return Command::INVALID;

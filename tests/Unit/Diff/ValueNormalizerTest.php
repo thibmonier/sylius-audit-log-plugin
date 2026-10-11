@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Tmonier\SyliusAuditLogPlugin\Unit\Diff;
 
 use PHPUnit\Framework\TestCase;
-use Tests\Tmonier\SyliusAuditLogPlugin\Unit\Fixture\Suit;
 use Tests\Tmonier\SyliusAuditLogPlugin\Unit\Fixture\Status;
+use Tests\Tmonier\SyliusAuditLogPlugin\Unit\Fixture\Suit;
 use Tmonier\SyliusAuditLogPlugin\Diff\ObjectReference;
 use Tmonier\SyliusAuditLogPlugin\Diff\ValueNormalizer;
 
@@ -46,7 +46,9 @@ final class ValueNormalizerTest extends TestCase
         self::assertSame('active', $normalizer->normalize(Status::Active, $noReference));
         self::assertSame('Hearts', $normalizer->normalize(Suit::Hearts, $noReference));
         self::assertSame('{"amount":1000,"channel":"WEB"}', $normalizer->normalize(['amount' => 1000, 'channel' => 'WEB'], $noReference));
-        self::assertSame(40, mb_strlen((string) $normalizer->normalize(range(1, 100), $noReference)));
+        $encoded = $normalizer->normalize(range(1, 100), $noReference);
+        self::assertIsString($encoded);
+        self::assertSame(40, mb_strlen($encoded));
     }
 
     public function testEntitiesBecomeReferencesAndOtherObjectsAreDescribed(): void

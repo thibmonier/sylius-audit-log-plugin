@@ -121,7 +121,7 @@ final class LabelResolverTest extends TestCase
                 return true;
             }
 
-            public function resolve(object $object): ?string
+            public function resolve(object $object): string
             {
                 return '  ' . str_repeat('x', 300);
             }

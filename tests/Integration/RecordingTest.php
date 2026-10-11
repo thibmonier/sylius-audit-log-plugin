@@ -62,7 +62,7 @@ final class RecordingTest extends KernelTestCase
         self::assertArrayNotHasKey('updatedAt', $entry->getChanges());
         self::assertStringContainsString('Audited hat', (string) $entry->getResourceLabel());
         self::assertSame('product', $entry->getOwnerType());
-        self::assertSame((string) $product->getId(), $entry->getOwnerId());
+        self::assertSame((string) $this->idOf($product), $entry->getOwnerId());
         self::assertSame(AuditLogEntryInterface::ACTOR_ADMIN, $entry->getActorType());
         self::assertSame($admin->getId(), $entry->getActorId());
         self::assertSame('sylius', $entry->getActorName());
@@ -90,13 +90,13 @@ final class RecordingTest extends KernelTestCase
         self::assertCount(1, $pricingEntries);
         self::assertEquals(['old' => $oldPrice, 'new' => (int) $oldPrice + 1000], $pricingEntries[0]->getChanges()['price']);
         self::assertSame('product', $pricingEntries[0]->getOwnerType());
-        self::assertSame((string) $product->getId(), $pricingEntries[0]->getOwnerId());
+        self::assertSame((string) $this->idOf($product), $pricingEntries[0]->getOwnerId());
         self::assertStringContainsString((string) $pricing->getChannelCode(), (string) $pricingEntries[0]->getResourceLabel());
 
         $variantEntries = $this->findEntries('product_variant', $this->idOf($variant));
         self::assertCount(1, $variantEntries);
         self::assertEquals(['old' => $oldOnHand, 'new' => (int) $oldOnHand + 5], $variantEntries[0]->getChanges()['onHand']);
-        self::assertSame((string) $product->getId(), $variantEntries[0]->getOwnerId());
+        self::assertSame((string) $this->idOf($product), $variantEntries[0]->getOwnerId());
         self::assertSame($pricingEntries[0]->getRequestId(), $variantEntries[0]->getRequestId(), 'Same flush, same correlation id');
     }
 
@@ -133,7 +133,7 @@ final class RecordingTest extends KernelTestCase
         self::assertSame('Audit VAT (AUDIT_VAT)', $create->getResourceLabel());
         self::assertEquals(['old' => null, 'new' => 'AUDIT_VAT'], $create->getChanges()['code']);
         self::assertEquals(['old' => null, 'new' => 0.2], $create->getChanges()['amount']);
-        self::assertEquals(['old' => null, 'new' => ['id' => (string) $category->getId(), 'label' => sprintf('%s (%s)', $category->getName(), $category->getCode())]], $create->getChanges()['category']);
+        self::assertEquals(['old' => null, 'new' => ['id' => (string) $this->idOf($category), 'label' => sprintf('%s (%s)', $category->getName(), $category->getCode())]], $create->getChanges()['category']);
         self::assertEquals(['amount' => ['old' => 0.2, 'new' => 0.21]], $update->getChanges());
         self::assertSame('Audit VAT (AUDIT_VAT)', $delete->getResourceLabel());
         self::assertEquals(['old' => 'AUDIT_VAT', 'new' => null], $delete->getChanges()['code']);
@@ -153,7 +153,7 @@ final class RecordingTest extends KernelTestCase
         self::assertCount(1, $entries);
         self::assertSame([
             'added' => [],
-            'removed' => [['id' => (string) $removed->getId(), 'label' => sprintf('%s (%s)', $removed->getName(), $removed->getCode())]],
+            'removed' => [['id' => (string) $this->idOf($removed), 'label' => sprintf('%s (%s)', $removed->getName(), $removed->getCode())]],
         ], $entries[0]->getChanges()['channels']);
     }
 
@@ -184,7 +184,8 @@ final class RecordingTest extends KernelTestCase
         $adminEntry = $this->findEntries('admin_user', $this->idOf($admin))[0];
         self::assertSame(['masked' => true], $adminEntry->getChanges()['password']);
         self::assertSame(['masked' => true], $adminEntry->getChanges()['passwordResetToken']);
-        $raw = (string) $this->connection()->fetchOne('SELECT changes FROM tmonier_audit_log_entry WHERE id = ?', [$adminEntry->getId()]);
+        $raw = $this->connection()->fetchOne('SELECT changes FROM tmonier_audit_log_entry WHERE id = ?', [$adminEntry->getId()]);
+        self::assertIsString($raw);
         self::assertStringNotContainsString('new-hash', $raw);
         self::assertStringNotContainsString('reset-token-value', $raw);
         self::assertStringNotContainsString($oldHash, $raw);
@@ -249,7 +250,7 @@ final class RecordingTest extends KernelTestCase
         self::assertSame('1 Audit Street', $addressEntry->getChanges()['street']['new'] ?? null);
         if (null === $address->getCustomer()) {
             self::assertSame('order', $addressEntry->getOwnerType());
-            self::assertSame((string) $order->getId(), $addressEntry->getOwnerId());
+            self::assertSame((string) $this->idOf($order), $addressEntry->getOwnerId());
         } else {
             self::assertSame('customer', $addressEntry->getOwnerType());
         }

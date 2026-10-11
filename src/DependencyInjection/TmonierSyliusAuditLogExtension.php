@@ -125,24 +125,26 @@ final class TmonierSyliusAuditLogExtension extends AbstractResourceExtension imp
             ];
         }
 
+        $validated = [];
         foreach ($merged as $name => $resource) {
             $class = $resource['class'];
             if (null === $class || (!class_exists($class) && !interface_exists($class))) {
                 throw new InvalidConfigurationException(sprintf('The audited resource "%s" needs an existing "class" (class or interface), "%s" given.', $name, (string) $class));
             }
 
+            // An owner that is not audited (disabled by the user) makes the resource its own root.
             $owner = $resource['owner'];
-            if (null !== $owner && (!isset($merged[$owner]) || null === $resource['owner_property_path'])) {
-                // The owner is not audited (disabled by the user): the resource becomes its own root.
-                $resource['owner'] = null;
-                $resource['owner_property_path'] = null;
-            }
+            $hasOwner = null !== $owner && isset($merged[$owner]) && null !== $resource['owner_property_path'];
 
-            $merged[$name] = ['class' => $class] + $resource;
+            $validated[$name] = [
+                'class' => $class,
+                'owner' => $hasOwner ? $owner : null,
+                'owner_property_path' => $hasOwner ? $resource['owner_property_path'] : null,
+                'ignored_fields' => $resource['ignored_fields'],
+            ];
         }
 
-        /** @var array<string, array{class: string, owner: ?string, owner_property_path: ?string, ignored_fields: list<string>}> $merged */
-        return $merged;
+        return $validated;
     }
 
     protected function getMigrationsNamespace(): string

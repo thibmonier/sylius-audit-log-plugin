@@ -73,7 +73,7 @@ final class MaintenanceCommandsTest extends KernelTestCase
         $customer = $order->getCustomer();
         self::assertInstanceOf(CustomerInterface::class, $customer);
         $email = (string) $customer->getEmail();
-        $customerId = (string) $customer->getId();
+        $customerId = (string) $this->idOf($customer);
 
         $this->authenticateAdmin();
         $customer->setFirstName('Erasable');
@@ -98,7 +98,7 @@ final class MaintenanceCommandsTest extends KernelTestCase
         self::assertSame(CustomerAuditLogAnonymizer::PLACEHOLDER, $customerEntry->getResourceLabel());
         self::assertSame(CustomerAuditLogAnonymizer::PLACEHOLDER, $customerEntry->getChanges()['firstName']['new'] ?? null);
         self::assertSame(CustomerAuditLogAnonymizer::PLACEHOLDER, $customerEntry->getChanges()['phoneNumber']['new'] ?? null);
-        $orderEntry = $this->findEntries('order', (string) $order->getId())[0];
+        $orderEntry = $this->findEntries('order', (string) $this->idOf($order))[0];
         self::assertSame('#' . $order->getNumber(), $orderEntry->getResourceLabel());
         self::assertSame(CustomerAuditLogAnonymizer::PLACEHOLDER, $orderEntry->getChanges()['notes']['new'] ?? null);
         self::assertSame('sylius', $orderEntry->getActorName(), 'The administrator stays known');

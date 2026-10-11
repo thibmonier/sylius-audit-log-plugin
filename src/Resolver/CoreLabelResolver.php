@@ -18,14 +18,14 @@ final class CoreLabelResolver implements LabelResolverInterface
 {
     public function supports(object $object): bool
     {
-        return $object instanceof OrderInterface
-            || $object instanceof CustomerInterface
-            || $object instanceof AdminUserInterface
-            || $object instanceof ProductVariantInterface
-            || $object instanceof ChannelPricingInterface
-            || $object instanceof AddressInterface
-            || $object instanceof PaymentInterface
-            || $object instanceof ShipmentInterface;
+        return $object instanceof OrderInterface ||
+            $object instanceof CustomerInterface ||
+            $object instanceof AdminUserInterface ||
+            $object instanceof ProductVariantInterface ||
+            $object instanceof ChannelPricingInterface ||
+            $object instanceof AddressInterface ||
+            $object instanceof PaymentInterface ||
+            $object instanceof ShipmentInterface;
     }
 
     public function resolve(object $object): ?string

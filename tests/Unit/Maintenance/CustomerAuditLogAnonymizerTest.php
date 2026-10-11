@@ -53,7 +53,7 @@ final class CustomerAuditLogAnonymizerTest extends TestCase
         self::assertSame(['old' => 'USD', 'new' => 'EUR'], $entry->getChanges()['currencyCode']);
         self::assertSame(['old' => null, 'new' => ['id' => '12', 'label' => CustomerAuditLogAnonymizer::PLACEHOLDER]], $entry->getChanges()['customer']);
         self::assertSame(['old' => null, 'new' => CustomerAuditLogAnonymizer::PLACEHOLDER], $entry->getChanges()['notes']);
-        self::assertSame(CustomerAuditLogAnonymizer::PLACEHOLDER, $entry->getChanges()['shippingAddress']['new']['label'] ?? null);
+        self::assertSame(['id' => '4', 'label' => CustomerAuditLogAnonymizer::PLACEHOLDER], $entry->getChanges()['shippingAddress']['new'] ?? null);
         self::assertSame(CustomerAuditLogAnonymizer::PLACEHOLDER, $entry->getActorName());
     }
 

@@ -30,8 +30,8 @@
                                     {% for item in change.added|default([]) %}<span class="badge bg-green-lt me-1 mb-1">+ {{ tmonier_audit_log_value(item) }}</span>{% else %}—{% endfor %}
                                 </td>
                             {% else %}
-                                <td class="text-break text-secondary" {{ sylius_test_html_attribute('audit-log-old') }}>{{ tmonier_audit_log_value(change.old|default(null)) }}</td>
-                                <td class="text-break" {{ sylius_test_html_attribute('audit-log-new') }}>{{ tmonier_audit_log_value(change.new|default(null)) }}</td>
+                                <td class="text-break text-secondary" {{ sylius_test_html_attribute('audit-log-old') }}>{{ tmonier_audit_log_value(change['old'] ?? null) }}</td>
+                                <td class="text-break" {{ sylius_test_html_attribute('audit-log-new') }}>{{ tmonier_audit_log_value(change['new'] ?? null) }}</td>
                             {% endif %}
                         </tr>
                     {% endfor %}

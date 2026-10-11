@@ -133,7 +133,10 @@ final class ChangeCollector
         }
     }
 
-    /** @param array<int, PendingEntry> $entries */
+    /**
+     * @param PersistentCollection<array-key, object> $collection
+     * @param array<int, PendingEntry> $entries
+     */
     private function collectCollection(EntityManagerInterface $entityManager, PersistentCollection $collection, bool $deleted, array &$entries): void
     {
         $owner = $collection->getOwner();
@@ -146,9 +149,7 @@ final class ChangeCollector
             return;
         }
 
-        /** @var mixed $mapping array with Doctrine ORM 2, object with ORM 3 */
-        $mapping = $collection->getMapping();
-        $field = $mapping instanceof AssociationMapping ? $mapping->fieldName : (is_array($mapping) && is_string($mapping['fieldName'] ?? null) ? $mapping['fieldName'] : null);
+        $field = self::fieldName($collection->getMapping());
         if (null === $field || $this->fieldPolicy->isIgnored($field, $resource)) {
             return;
         }
@@ -256,6 +257,16 @@ final class ChangeCollector
         }
 
         $entry->setFieldChange($key, $old, $new);
+    }
+
+    /** @param mixed $mapping array with Doctrine ORM 2, object with ORM 3 */
+    private static function fieldName(mixed $mapping): ?string
+    {
+        if ($mapping instanceof AssociationMapping) {
+            return $mapping->fieldName;
+        }
+
+        return is_array($mapping) && is_string($mapping['fieldName'] ?? null) ? $mapping['fieldName'] : null;
     }
 
     private function isEntity(EntityManagerInterface $entityManager, object $object): bool

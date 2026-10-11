@@ -90,7 +90,10 @@ trait AuditLogTestTrait
 
     private function countEntries(): int
     {
-        return (int) $this->connection()->fetchOne('SELECT COUNT(*) FROM tmonier_audit_log_entry');
+        $count = $this->connection()->fetchOne('SELECT COUNT(*) FROM tmonier_audit_log_entry');
+        self::assertIsNumeric($count);
+
+        return (int) $count;
     }
 
     private function idOf(object $resource): int
