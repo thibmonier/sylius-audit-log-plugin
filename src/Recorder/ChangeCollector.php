@@ -252,7 +252,7 @@ final class ChangeCollector
         $old = $this->normalizer->normalize($old, $referenceFactory);
         $new = $this->normalizer->normalize($new, $referenceFactory);
 
-        if ($old === $new || ($old instanceof ObjectReference && $old->isSameAs($new))) {
+        if ($old === $new || ($old instanceof ObjectReference && $old->isSameAs($new)) || self::sameNumber($old, $new)) {
             return;
         }
 
@@ -267,6 +267,12 @@ final class ChangeCollector
         }
 
         return is_array($mapping) && is_string($mapping['fieldName'] ?? null) ? $mapping['fieldName'] : null;
+    }
+
+    /** Decimal columns are hydrated as strings ("0.20000") while the application sets floats. */
+    private static function sameNumber(mixed $old, mixed $new): bool
+    {
+        return is_numeric($old) && is_numeric($new) && !is_bool($old) && !is_bool($new) && (float) $old === (float) $new;
     }
 
     private function isEntity(EntityManagerInterface $entityManager, object $object): bool

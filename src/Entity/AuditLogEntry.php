@@ -46,14 +46,22 @@ class AuditLogEntry implements AuditLogEntryInterface
         return $this->id;
     }
 
+    /**
+     * Stored in UTC. Doctrine hydrates the column in the PHP default timezone: the wall-clock
+     * value is read back as UTC so that templates convert it to the display timezone.
+     */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->createdAt;
+        if (null === $this->createdAt || 'UTC' === $this->createdAt->getTimezone()->getName()) {
+            return $this->createdAt;
+        }
+
+        return new \DateTimeImmutable($this->createdAt->format('Y-m-d H:i:s.u'), new \DateTimeZone('UTC'));
     }
 
     public function setCreatedAt(\DateTimeImmutable $createdAt): void
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = $createdAt->setTimezone(new \DateTimeZone('UTC'));
     }
 
     public function getAction(): ?string

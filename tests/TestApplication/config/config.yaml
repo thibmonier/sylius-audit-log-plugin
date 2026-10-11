@@ -16,3 +16,14 @@ doctrine:
                         type: attribute
                         dir: '%kernel.project_dir%/../../../tests/TestApplication/src/Entity'
                         prefix: Tests\Tmonier\SyliusAuditLogPlugin
+
+# Development helper: bin/console tmonier:audit-log:demo
+services:
+    Tests\Tmonier\SyliusAuditLogPlugin\Command\GenerateDemoAuditLogCommand:
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+            $tokenStorage: '@security.token_storage'
+            $requestStack: '@request_stack'
+            $couponFactory: '@sylius.factory.promotion_coupon'
+            $taxonFactory: '@sylius.factory.taxon'
+        tags: ['console.command']

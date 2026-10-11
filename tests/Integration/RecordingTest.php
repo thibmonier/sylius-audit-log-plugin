@@ -141,6 +141,19 @@ final class RecordingTest extends KernelTestCase
         self::assertSame($taxRate::class, $delete->getResourceClass());
     }
 
+    public function testADecimalSetToTheSameNumberIsNotAChange(): void
+    {
+        $taxRate = $this->entityManager()->getRepository(TaxRateInterface::class)->findOneBy([]);
+        self::assertNotNull($taxRate);
+        $this->entityManager()->refresh($taxRate);
+        $before = $this->countEntries();
+
+        $taxRate->setAmount((float) $taxRate->getAmount());
+        $this->entityManager()->flush();
+
+        self::assertSame($before, $this->countEntries());
+    }
+
     public function testManyToManyCollectionChangesAreRecorded(): void
     {
         $product = $this->findProduct();

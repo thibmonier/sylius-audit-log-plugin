@@ -50,7 +50,7 @@ final class Configuration implements ConfigurationInterface
             'owner_property_path' => 'productVariant',
             'ignored_fields' => ['lowestPriceBeforeDiscount', 'appliedPromotions'],
         ],
-        'taxon' => ['class' => TaxonInterface::class],
+        'taxon' => ['class' => TaxonInterface::class, 'ignored_fields' => ['left', 'right', 'level', 'root']],
         'promotion' => ['class' => PromotionInterface::class],
         'promotion_coupon' => ['class' => PromotionCouponInterface::class, 'owner' => 'promotion', 'owner_property_path' => 'promotion'],
         'promotion_rule' => ['class' => PromotionRuleInterface::class, 'owner' => 'promotion', 'owner_property_path' => 'promotion'],
