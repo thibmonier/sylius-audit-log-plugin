@@ -1,0 +1,26 @@
+tmonier_audit_log_admin_audit_log_entry_index:
+    path: /audit-log
+    methods: [GET]
+    defaults:
+        _controller: tmonier_audit_log.controller.audit_log_entry::indexAction
+        _sylius:
+            section: admin
+            permission: true
+            template: "@SyliusAdmin/shared/crud/index.html.twig"
+            grid: tmonier_audit_log_admin_audit_log_entry
+            vars:
+                hook_prefix: tmonier_audit_log.admin.audit_log_entry
+
+tmonier_audit_log_admin_audit_log_entry_show:
+    path: /audit-log/{id}
+    methods: [GET]
+    requirements:
+        id: '\d+'
+    defaults:
+        _controller: tmonier_audit_log.controller.audit_log_entry::showAction
+        _sylius:
+            section: admin
+            permission: true
+            template: "@SyliusAdmin/shared/crud/show.html.twig"
+            vars:
+                hook_prefix: tmonier_audit_log.admin.audit_log_entry

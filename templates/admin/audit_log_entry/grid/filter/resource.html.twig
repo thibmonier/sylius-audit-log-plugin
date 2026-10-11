@@ -1,0 +1,6 @@
+{% form_theme form '@SyliusAdmin/shared/form_theme.html.twig' %}
+
+<div class="sylius-filters__string">
+    {{ form_row(form.type, {'label': 'tmonier_audit_log.ui.resource_type'}) }}
+    {{ form_row(form.id, {'label': 'tmonier_audit_log.ui.resource_id', attr: {placeholder: 'tmonier_audit_log.ui.resource_id'|trans}}) }}
+</div>

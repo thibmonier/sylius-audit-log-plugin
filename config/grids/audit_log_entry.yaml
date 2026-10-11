@@ -1,0 +1,80 @@
+sylius_grid:
+    grids:
+        tmonier_audit_log_admin_audit_log_entry:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: "%tmonier_audit_log.model.audit_log_entry.class%"
+            sorting:
+                createdAt: desc
+            limits: [25, 50, 100]
+            fields:
+                createdAt:
+                    type: twig
+                    label: tmonier_audit_log.ui.date
+                    sortable: ~
+                    options:
+                        template: "@SyliusAdmin/shared/grid/field/date.html.twig"
+                        vars:
+                            format: 'd-m-Y H:i:s'
+                action:
+                    type: twig
+                    label: tmonier_audit_log.ui.action
+                    options:
+                        template: "@TmonierSyliusAuditLogPlugin/admin/audit_log_entry/grid/field/action.html.twig"
+                resource:
+                    type: twig
+                    label: tmonier_audit_log.ui.resource
+                    path: .
+                    options:
+                        template: "@TmonierSyliusAuditLogPlugin/admin/audit_log_entry/grid/field/resource.html.twig"
+                changes:
+                    type: twig
+                    label: tmonier_audit_log.ui.changed_fields
+                    path: .
+                    options:
+                        template: "@TmonierSyliusAuditLogPlugin/admin/audit_log_entry/grid/field/changes.html.twig"
+                actor:
+                    type: twig
+                    label: tmonier_audit_log.ui.actor
+                    path: .
+                    options:
+                        template: "@TmonierSyliusAuditLogPlugin/admin/audit_log_entry/grid/field/actor.html.twig"
+            filters:
+                createdAt:
+                    type: date
+                    label: tmonier_audit_log.ui.date
+                resource:
+                    type: tmonier_audit_log_resource
+                    label: tmonier_audit_log.ui.resource
+                action:
+                    type: select
+                    label: tmonier_audit_log.ui.action
+                    form_options:
+                        choices:
+                            tmonier_audit_log.ui.action_type.create: create
+                            tmonier_audit_log.ui.action_type.update: update
+                            tmonier_audit_log.ui.action_type.delete: delete
+                actorType:
+                    type: select
+                    label: tmonier_audit_log.ui.actor_type_label
+                    form_options:
+                        choices:
+                            tmonier_audit_log.ui.actor_type.admin: admin
+                            tmonier_audit_log.ui.actor_type.customer: customer
+                            tmonier_audit_log.ui.actor_type.cli: cli
+                            tmonier_audit_log.ui.actor_type.system: system
+                actor:
+                    type: string
+                    label: tmonier_audit_log.ui.actor
+                    options:
+                        fields: [actorName]
+                requestId:
+                    type: string
+                    label: tmonier_audit_log.ui.request_id
+                    form_options:
+                        type: equal
+            actions:
+                item:
+                    show:
+                        type: show

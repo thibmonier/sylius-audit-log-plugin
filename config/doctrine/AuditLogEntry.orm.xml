@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+
+    <!--
+        No foreign key on purpose: the audit trail outlives the audited resources and actors.
+        Entries are written with DBAL inserts (see AuditLogWriter), never cascaded.
+    -->
+    <mapped-superclass name="Tmonier\SyliusAuditLogPlugin\Entity\AuditLogEntry" table="tmonier_audit_log_entry">
+        <indexes>
+            <index name="tmonier_audit_log_entry_created_at_idx" columns="created_at" />
+            <index name="tmonier_audit_log_entry_owner_idx" columns="owner_type,owner_id,created_at" />
+            <index name="tmonier_audit_log_entry_resource_idx" columns="resource_type,resource_id" />
+            <index name="tmonier_audit_log_entry_actor_idx" columns="actor_type,actor_id" />
+            <index name="tmonier_audit_log_entry_request_idx" columns="request_id" />
+        </indexes>
+
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <field name="createdAt" column="created_at" type="datetime_immutable" />
+        <field name="action" column="action" type="string" length="16" />
+        <field name="resourceType" column="resource_type" type="string" length="64" />
+        <field name="resourceClass" column="resource_class" type="string" length="255" />
+        <field name="resourceId" column="resource_id" type="string" length="64" nullable="true" />
+        <field name="resourceLabel" column="resource_label" type="string" length="255" nullable="true" />
+        <field name="ownerType" column="owner_type" type="string" length="64" nullable="true" />
+        <field name="ownerId" column="owner_id" type="string" length="64" nullable="true" />
+        <field name="changes" column="changes" type="json" />
+        <field name="actorType" column="actor_type" type="string" length="16" />
+        <field name="actorId" column="actor_id" type="integer" nullable="true" />
+        <field name="actorName" column="actor_name" type="string" length="255" nullable="true" />
+        <field name="source" column="source" type="string" length="16" />
+        <field name="ipAddress" column="ip_address" type="string" length="45" nullable="true" />
+        <field name="requestId" column="request_id" type="string" length="64" nullable="true" />
+        <field name="route" column="route" type="string" length="255" nullable="true" />
+    </mapped-superclass>
+
+</doctrine-mapping>

@@ -1,0 +1,10 @@
+{# Variables: entry, max (number of field names shown) #}
+{% set fields = entry.changedFields %}
+{% set max = max|default(4) %}
+<span class="text-secondary" {{ sylius_test_html_attribute('audit-log-changed-fields') }}>
+    {%- for field in fields|slice(0, max) -%}
+        {{ tmonier_audit_log_field(field) }}{% if not loop.last %}, {% endif %}
+    {%- endfor -%}
+    {%- if fields|length > max %} {{ 'tmonier_audit_log.ui.and_more'|trans({'%count%': fields|length - max}) }}{% endif -%}
+    {%- if fields is empty %}—{% endif -%}
+</span>

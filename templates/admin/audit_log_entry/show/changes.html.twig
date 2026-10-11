@@ -1,0 +1,42 @@
+{% set entry = hookable_metadata.context.resource %}
+
+<div class="card mb-3">
+    <div class="card-header"><div class="card-title">{{ 'tmonier_audit_log.ui.changes'|trans }}</div></div>
+    {% if entry.changes is empty %}
+        <div class="card-body"><p class="text-secondary mb-0">{{ 'tmonier_audit_log.ui.no_field_changes'|trans }}</p></div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table" {{ sylius_test_html_attribute('audit-log-changes') }}>
+                <thead>
+                    <tr>
+                        <th class="w-25">{{ 'tmonier_audit_log.ui.field'|trans }}</th>
+                        <th>{{ 'tmonier_audit_log.ui.old_value'|trans }}</th>
+                        <th>{{ 'tmonier_audit_log.ui.new_value'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for field, change in entry.changes %}
+                        <tr {{ sylius_test_html_attribute('audit-log-change', field) }}>
+                            <th class="fw-normal" title="{{ field }}">{{ tmonier_audit_log_field(field) }}</th>
+                            {% if change.masked|default(false) %}
+                                <td colspan="2" class="text-secondary" {{ sylius_test_html_attribute('audit-log-masked') }}>
+                                    {{ ux_icon('tabler:lock', {'class': 'icon'}) }} {{ 'tmonier_audit_log.ui.masked'|trans }}
+                                </td>
+                            {% elseif change.added is defined or change.removed is defined %}
+                                <td class="text-break" {{ sylius_test_html_attribute('audit-log-removed') }}>
+                                    {% for item in change.removed|default([]) %}<span class="badge bg-red-lt me-1 mb-1">− {{ tmonier_audit_log_value(item) }}</span>{% else %}—{% endfor %}
+                                </td>
+                                <td class="text-break" {{ sylius_test_html_attribute('audit-log-added') }}>
+                                    {% for item in change.added|default([]) %}<span class="badge bg-green-lt me-1 mb-1">+ {{ tmonier_audit_log_value(item) }}</span>{% else %}—{% endfor %}
+                                </td>
+                            {% else %}
+                                <td class="text-break text-secondary" {{ sylius_test_html_attribute('audit-log-old') }}>{{ tmonier_audit_log_value(change.old|default(null)) }}</td>
+                                <td class="text-break" {{ sylius_test_html_attribute('audit-log-new') }}>{{ tmonier_audit_log_value(change.new|default(null)) }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

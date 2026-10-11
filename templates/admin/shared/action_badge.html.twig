@@ -1,0 +1,3 @@
+{# Variables: action (create|update|delete) #}
+{% set color = {create: 'green', update: 'azure', delete: 'red'}[action]|default('secondary') %}
+<span class="badge bg-{{ color }}-lt" {{ sylius_test_html_attribute('audit-log-action', action) }}>{{ ('tmonier_audit_log.ui.action_type.' ~ action)|trans }}</span>

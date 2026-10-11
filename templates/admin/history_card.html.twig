@@ -1,0 +1,65 @@
+{#
+    "History" card of an audited resource (product, order, customer, promotion pages): the last
+    changes of the resource and of the resources it owns.
+    Hook configuration: container (bool) wraps the card in a .container-xl (update pages).
+#}
+{% set history = tmonier_audit_log_history(hookable_metadata.context.resource|default(null)) %}
+
+{% if history is not null %}
+    {% if hookable_metadata.configuration.container|default(false) %}<div class="container-xl mt-3">{% endif %}
+    <div class="card mb-3" id="tmonier-audit-log-history" {{ sylius_test_html_attribute('audit-log-history') }}>
+        <div class="card-header">
+            <div class="card-title">
+                {{ ux_icon('tabler:history', {'class': 'icon'}) }}
+                {{ 'tmonier_audit_log.ui.history'|trans }}
+            </div>
+            {% if history.total > 0 %}
+                <div class="card-actions">
+                    <a href="{{ path('tmonier_audit_log_admin_audit_log_entry_index', {'criteria': {'resource': {'type': history.type, 'id': history.id}}}) }}" class="btn btn-sm" {{ sylius_test_html_attribute('audit-log-history-all') }}>
+                        {{ 'tmonier_audit_log.ui.see_all'|trans({'%count%': history.total}) }}
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        {% if history.entries is empty %}
+            <div class="card-body">
+                <p class="text-secondary mb-0" {{ sylius_test_html_attribute('audit-log-history-empty') }}>{{ 'tmonier_audit_log.ui.no_changes'|trans }}</p>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'tmonier_audit_log.ui.date'|trans }}</th>
+                            <th>{{ 'tmonier_audit_log.ui.actor'|trans }}</th>
+                            <th>{{ 'tmonier_audit_log.ui.action'|trans }}</th>
+                            <th>{{ 'tmonier_audit_log.ui.changed_fields'|trans }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in history.entries %}
+                            <tr {{ sylius_test_html_attribute('audit-log-history-entry', entry.id) }}>
+                                <td class="text-nowrap"><time datetime="{{ entry.createdAt|date('c', 'UTC') }}">{{ entry.createdAt|format_datetime('medium', 'short') }}</time></td>
+                                <td {{ sylius_test_html_attribute('audit-log-actor') }}>{{ tmonier_audit_log_actor(entry) }}</td>
+                                <td>
+                                    {% include '@TmonierSyliusAuditLogPlugin/admin/shared/action_badge.html.twig' with { action: entry.action } %}
+                                    {% if entry.resourceType != history.type %}
+                                        <span class="text-secondary ms-1" {{ sylius_test_html_attribute('audit-log-history-resource') }}>{{ tmonier_audit_log_resource_type(entry.resourceType) }} {{ entry.resourceLabel }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{% include '@TmonierSyliusAuditLogPlugin/admin/shared/changed_fields.html.twig' with { entry: entry, max: 4 } %}</td>
+                                <td class="text-end">
+                                    <a href="{{ path('tmonier_audit_log_admin_audit_log_entry_show', {'id': entry.id}) }}" class="btn btn-sm btn-ghost-secondary" title="{{ 'sylius.ui.show'|trans }}">
+                                        {{ ux_icon('tabler:eye', {'class': 'icon'}) }}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+    {% if hookable_metadata.configuration.container|default(false) %}</div>{% endif %}
+{% endif %}

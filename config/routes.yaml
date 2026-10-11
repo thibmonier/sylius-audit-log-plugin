@@ -1,0 +1,8 @@
+# Import this file from your application's config/routes:
+#
+# tmonier_sylius_audit_log:
+#     resource: "@TmonierSyliusAuditLogPlugin/config/routes.yaml"
+
+tmonier_audit_log_admin:
+    resource: "@TmonierSyliusAuditLogPlugin/config/routes/admin.yaml"
+    prefix: '/%sylius_admin.path_name%'

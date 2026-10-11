@@ -1,0 +1,14 @@
+{% set url = tmonier_audit_log_resource_url(data.resourceType, data.resourceId) %}
+<div>
+    <span class="text-secondary">{{ tmonier_audit_log_resource_type(data.resourceType) }}</span>
+    {% if data.action != 'delete' and url is not null %}
+        <a href="{{ url }}" {{ sylius_test_html_attribute('audit-log-resource-label') }}>{{ data.resourceLabel|default('#' ~ data.resourceId) }}</a>
+    {% else %}
+        <span {{ sylius_test_html_attribute('audit-log-resource-label') }}>{{ data.resourceLabel|default('#' ~ data.resourceId) }}</span>
+    {% endif %}
+</div>
+{% if data.ownerType is not null and (data.ownerType != data.resourceType or data.ownerId != data.resourceId) %}
+    <div class="small text-secondary">
+        {{ tmonier_audit_log_resource_type(data.ownerType) }} #{{ data.ownerId }}
+    </div>
+{% endif %}

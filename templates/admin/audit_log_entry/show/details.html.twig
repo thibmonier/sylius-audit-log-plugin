@@ -1,0 +1,68 @@
+{% set entry = hookable_metadata.context.resource %}
+{% set url = entry.action != 'delete' ? tmonier_audit_log_resource_url(entry.resourceType, entry.resourceId) : null %}
+{% set owner_url = tmonier_audit_log_resource_url(entry.ownerType, entry.ownerId) %}
+
+<div class="card mb-3">
+    <div class="card-header"><div class="card-title">{{ 'tmonier_audit_log.ui.details'|trans }}</div></div>
+    <div class="card-body">
+        <div class="datagrid">
+            <div class="datagrid-item">
+                <div class="datagrid-title">{{ 'tmonier_audit_log.ui.date'|trans }}</div>
+                <div class="datagrid-content"><time datetime="{{ entry.createdAt|date('c', 'UTC') }}">{{ entry.createdAt|format_datetime('medium', 'medium') }}</time> <span class="text-secondary small">({{ entry.createdAt|date('Y-m-d H:i:s', 'UTC') }} UTC)</span></div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">{{ 'tmonier_audit_log.ui.action'|trans }}</div>
+                <div class="datagrid-content">{% include '@TmonierSyliusAuditLogPlugin/admin/shared/action_badge.html.twig' with { action: entry.action } %}</div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">{{ 'tmonier_audit_log.ui.resource'|trans }}</div>
+                <div class="datagrid-content" {{ sylius_test_html_attribute('audit-log-resource') }}>
+                    {{ tmonier_audit_log_resource_type(entry.resourceType) }}
+                    {% if url is not null %}<a href="{{ url }}">{{ entry.resourceLabel }}</a>{% else %}{{ entry.resourceLabel }}{% endif %}
+                    <span class="text-secondary">#{{ entry.resourceId }}</span>
+                </div>
+            </div>
+            {% if entry.ownerType is not null and (entry.ownerType != entry.resourceType or entry.ownerId != entry.resourceId) %}
+                <div class="datagrid-item">
+                    <div class="datagrid-title">{{ 'tmonier_audit_log.ui.belongs_to'|trans }}</div>
+                    <div class="datagrid-content">
+                        {{ tmonier_audit_log_resource_type(entry.ownerType) }}
+                        {% if owner_url is not null %}<a href="{{ owner_url }}">#{{ entry.ownerId }}</a>{% else %}#{{ entry.ownerId }}{% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="datagrid-item">
+                <div class="datagrid-title">{{ 'tmonier_audit_log.ui.actor'|trans }}</div>
+                <div class="datagrid-content" {{ sylius_test_html_attribute('audit-log-actor') }}>
+                    {{ tmonier_audit_log_actor(entry) }}
+                    <span class="badge bg-secondary-lt ms-1">{{ ('tmonier_audit_log.ui.actor_type.' ~ entry.actorType)|trans }}</span>
+                </div>
+            </div>
+            <div class="datagrid-item">
+                <div class="datagrid-title">{{ 'tmonier_audit_log.ui.source_label'|trans }}</div>
+                <div class="datagrid-content">{{ ('tmonier_audit_log.ui.source.' ~ entry.source)|trans }}</div>
+            </div>
+            {% if entry.route is not null %}
+                <div class="datagrid-item">
+                    <div class="datagrid-title">{{ 'tmonier_audit_log.ui.route'|trans }}</div>
+                    <div class="datagrid-content"><code>{{ entry.route }}</code></div>
+                </div>
+            {% endif %}
+            {% if entry.ipAddress is not null %}
+                <div class="datagrid-item">
+                    <div class="datagrid-title">{{ 'tmonier_audit_log.ui.ip_address'|trans }}</div>
+                    <div class="datagrid-content">{{ entry.ipAddress }}</div>
+                </div>
+            {% endif %}
+            {% if entry.requestId is not null %}
+                <div class="datagrid-item">
+                    <div class="datagrid-title">{{ 'tmonier_audit_log.ui.request_id'|trans }}</div>
+                    <div class="datagrid-content">
+                        <a href="{{ path('tmonier_audit_log_admin_audit_log_entry_index', {'criteria': {'requestId': {'value': entry.requestId}}}) }}" {{ sylius_test_html_attribute('audit-log-request') }}>{{ 'tmonier_audit_log.ui.same_request'|trans }}</a>
+                        <div class="small text-secondary text-break"><code>{{ entry.requestId }}</code></div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
