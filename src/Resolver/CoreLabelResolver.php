@@ -45,8 +45,8 @@ final class CoreLabelResolver implements LabelResolverInterface
 
     private function variant(ProductVariantInterface $variant): ?string
     {
-        $product = $variant->getProduct()?->getName();
-        $name = $variant->getName();
+        $product = self::safe(static fn (): ?string => $variant->getProduct()?->getName());
+        $name = self::safe(static fn (): ?string => $variant->getName());
         $code = $variant->getCode();
 
         $label = implode(' - ', array_filter([$product, $name !== $product ? $name : null], static fn (?string $part): bool => null !== $part && '' !== $part));
@@ -55,6 +55,16 @@ final class CoreLabelResolver implements LabelResolverInterface
         }
 
         return '' === $label ? $code : sprintf('%s (%s)', $label, $code);
+    }
+
+    /** @param \Closure(): ?string $getter translated getters throw when no locale is set */
+    private static function safe(\Closure $getter): ?string
+    {
+        try {
+            return $getter();
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     private function address(AddressInterface $address): string
