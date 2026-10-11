@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Sylius\Component\Core\Model\AdminUserInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\DomCrawler\Field\FormField;
 
 /**
  * End to end through the real admin product form. The product form does not survive a
@@ -62,7 +63,9 @@ final class AdminProductEditTest extends WebTestCase
         $crawler = $client->request('GET', sprintf('/admin/products/%d/edit', $productId));
         self::assertResponseIsSuccessful();
         $form = $crawler->filter('form[name="sylius_admin_product"]')->form();
-        $previous = $form[self::NAME_FIELD]->getValue();
+        $field = $form[self::NAME_FIELD];
+        self::assertInstanceOf(FormField::class, $field);
+        $previous = $field->getValue();
         self::assertIsString($previous);
 
         if (null !== $name) {

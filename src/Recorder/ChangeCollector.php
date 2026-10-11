@@ -272,7 +272,7 @@ final class ChangeCollector
     /** Decimal columns are hydrated as strings ("0.20000") while the application sets floats. */
     private static function sameNumber(mixed $old, mixed $new): bool
     {
-        return is_numeric($old) && is_numeric($new) && !is_bool($old) && !is_bool($new) && (float) $old === (float) $new;
+        return is_numeric($old) && is_numeric($new) && (float) $old === (float) $new;
     }
 
     private function isEntity(EntityManagerInterface $entityManager, object $object): bool
