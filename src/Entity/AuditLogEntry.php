@@ -52,7 +52,7 @@ class AuditLogEntry implements AuditLogEntryInterface
      */
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        if (null === $this->createdAt || 'UTC' === $this->createdAt->getTimezone()->getName()) {
+        if (!$this->createdAt instanceof \DateTimeImmutable || 'UTC' === $this->createdAt->getTimezone()->getName()) {
             return $this->createdAt;
         }
 
@@ -146,7 +146,7 @@ class AuditLogEntry implements AuditLogEntryInterface
 
     public function getChangedFields(): array
     {
-        return array_map('strval', array_keys($this->changes));
+        return array_map(strval(...), array_keys($this->changes));
     }
 
     public function getActorType(): ?string

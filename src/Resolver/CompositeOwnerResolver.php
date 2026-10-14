@@ -12,14 +12,14 @@ use Tmonier\SyliusAuditLogPlugin\Resource\AuditedResourceRegistryInterface;
  * Climbs the owner chain up to the aggregate root (channel pricing -> variant -> product), so
  * that the history card of a product lists the changes of its variants and prices.
  */
-final class CompositeOwnerResolver
+final readonly class CompositeOwnerResolver
 {
     private const MAX_DEPTH = 5;
 
     /** @param iterable<OwnerResolverInterface> $resolvers */
     public function __construct(
-        private readonly iterable $resolvers,
-        private readonly AuditedResourceRegistryInterface $registry,
+        private iterable $resolvers,
+        private AuditedResourceRegistryInterface $registry,
     ) {
     }
 
@@ -30,7 +30,7 @@ final class CompositeOwnerResolver
         for ($depth = 0; $depth < self::MAX_DEPTH; ++$depth) {
             $owner = $this->resolveOwner($entity, $resource, $entityManager);
             $ownerResource = null !== $owner ? $this->registry->match($owner) : null;
-            if (null === $owner || null === $ownerResource || $owner === $entity) {
+            if (null === $owner || !$ownerResource instanceof \Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource || $owner === $entity) {
                 break;
             }
 

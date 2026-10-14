@@ -46,7 +46,7 @@ final class AuditLogExtension extends AbstractExtension
         }
 
         $audited = $this->registry->match($resource);
-        if (null === $audited) {
+        if (!$audited instanceof \Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource) {
             return null;
         }
 

@@ -143,7 +143,7 @@ final class AuditContextProviderTest extends TestCase
         bool $anonymizeIp = true,
     ): AuditContextProvider {
         $tokenStorage = new TokenStorage();
-        if (null !== $user) {
+        if ($user instanceof \Symfony\Component\Security\Core\User\UserInterface) {
             $tokenStorage->setToken(new UsernamePasswordToken($user, 'main', $user->getRoles()));
         }
 

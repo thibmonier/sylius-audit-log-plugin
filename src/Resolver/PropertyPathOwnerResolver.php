@@ -9,9 +9,9 @@ use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource;
 
 /** Reads the "owner_property_path" configured for the resource. */
-final class PropertyPathOwnerResolver implements OwnerResolverInterface
+final readonly class PropertyPathOwnerResolver implements OwnerResolverInterface
 {
-    public function __construct(private readonly PropertyAccessorInterface $propertyAccessor)
+    public function __construct(private PropertyAccessorInterface $propertyAccessor)
     {
     }
 

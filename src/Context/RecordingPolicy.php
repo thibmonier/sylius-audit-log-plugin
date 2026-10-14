@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Tmonier\SyliusAuditLogPlugin\Context;
 
 /** Whether the changes of the current request or command must be recorded. */
-final class RecordingPolicy
+final readonly class RecordingPolicy
 {
     /**
      * @param list<string> $sources
      * @param list<string> $ignoredCommands
      */
     public function __construct(
-        private readonly AuditContextProviderInterface $contextProvider,
-        private readonly bool $enabled,
-        private readonly array $sources,
-        private readonly array $ignoredCommands,
+        private AuditContextProviderInterface $contextProvider,
+        private bool $enabled,
+        private array $sources,
+        private array $ignoredCommands,
     ) {
     }
 

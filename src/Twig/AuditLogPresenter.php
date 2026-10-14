@@ -46,7 +46,7 @@ final class AuditLogPresenter
             null === $value, '' === $value => '—',
             true === $value => $this->translator->trans('sylius.ui.yes_label'),
             false === $value => $this->translator->trans('sylius.ui.no_label'),
-            is_array($value) && array_is_list($value) => implode(', ', array_map(fn (mixed $item): string => $this->value($item), $value)),
+            is_array($value) && array_is_list($value) => implode(', ', array_map($this->value(...), $value)),
             is_array($value) => $this->reference($value),
             is_scalar($value) => (string) $value,
             default => get_debug_type($value),
@@ -75,7 +75,7 @@ final class AuditLogPresenter
             foreach (['show', 'update'] as $action) {
                 $name = sprintf('sylius_admin_%s_%s', $type, $action);
                 $route = $collection->get($name);
-                if (null !== $route && ['id'] === $route->compile()->getPathVariables()) {
+                if ($route instanceof \Symfony\Component\Routing\Route && ['id'] === $route->compile()->getPathVariables()) {
                     $this->routes[$type] = $name;
 
                     break;
