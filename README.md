@@ -37,7 +37,11 @@ staff notes. They complement each other and can be installed together.
 
 ## Screenshots
 
-Screenshots go in `docs/images/`.
+![Audit log grid in the Sylius admin with filters by date, resource, action, actor and request, listing changes made by two administrators](docs/images/admin-audit-log-grid.jpg)
+
+![Audit log entry page showing who changed a promotion, from where, and a before/after diff of the changed fields](docs/images/admin-audit-log-entry.jpg)
+
+![History card on a product page listing the latest changes of the product, its variant and channel prices](docs/images/admin-product-history.jpg)
 
 ## Requirements
 
