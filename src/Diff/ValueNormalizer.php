@@ -8,11 +8,11 @@ namespace Tmonier\SyliusAuditLogPlugin\Diff;
  * Turns a field value into something JSON can store: scalars stay scalars, text is truncated,
  * dates become ISO 8601 strings, arrays are JSON-encoded, entities become references.
  */
-final class ValueNormalizer
+final readonly class ValueNormalizer
 {
     public const ELLIPSIS = '…';
 
-    public function __construct(private readonly int $maxLength = 500)
+    public function __construct(private int $maxLength = 500)
     {
     }
 

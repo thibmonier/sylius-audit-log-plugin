@@ -25,14 +25,14 @@ use Tmonier\SyliusAuditLogPlugin\Resource\AuditedResourceRegistryInterface;
  * Translation changes are folded into their translatable ("name (fr_FR)"), collection changes
  * into the entity owning the collection.
  */
-final class ChangeCollector
+final readonly class ChangeCollector
 {
     public function __construct(
-        private readonly AuditedResourceRegistryInterface $registry,
-        private readonly CompositeOwnerResolver $ownerResolver,
-        private readonly LabelResolverInterface $labelResolver,
-        private readonly ValueNormalizer $normalizer,
-        private readonly FieldPolicy $fieldPolicy,
+        private AuditedResourceRegistryInterface $registry,
+        private CompositeOwnerResolver $ownerResolver,
+        private LabelResolverInterface $labelResolver,
+        private ValueNormalizer $normalizer,
+        private FieldPolicy $fieldPolicy,
     ) {
     }
 
@@ -94,7 +94,7 @@ final class ChangeCollector
         }
 
         $resource = $this->registry->match($entity);
-        if (null === $resource) {
+        if (!$resource instanceof \Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource) {
             return;
         }
 
@@ -116,7 +116,7 @@ final class ChangeCollector
         }
 
         $resource = $this->registry->match($translatable);
-        if (null === $resource) {
+        if (!$resource instanceof \Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource) {
             return;
         }
 
@@ -145,11 +145,11 @@ final class ChangeCollector
         }
 
         $resource = $this->registry->match($owner);
-        if (null === $resource || $entityManager->getUnitOfWork()->isScheduledForDelete($owner)) {
+        if (!$resource instanceof \Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource || $entityManager->getUnitOfWork()->isScheduledForDelete($owner)) {
             return;
         }
 
-        $field = self::fieldName($collection->getMapping());
+        $field = $this->fieldName($collection->getMapping());
         if (null === $field || $this->fieldPolicy->isIgnored($field, $resource)) {
             return;
         }
@@ -163,7 +163,7 @@ final class ChangeCollector
 
         $toReferences = fn (array $objects): array => array_values(array_map(
             fn (object $object): ObjectReference => $this->reference($entityManager, $object),
-            array_filter($objects, 'is_object'),
+            array_filter($objects, is_object(...)),
         ));
 
         if ($deleted) {
@@ -252,7 +252,7 @@ final class ChangeCollector
         $old = $this->normalizer->normalize($old, $referenceFactory);
         $new = $this->normalizer->normalize($new, $referenceFactory);
 
-        if ($old === $new || ($old instanceof ObjectReference && $old->isSameAs($new)) || self::sameNumber($old, $new)) {
+        if ($old === $new || ($old instanceof ObjectReference && $old->isSameAs($new)) || $this->sameNumber($old, $new)) {
             return;
         }
 
@@ -260,7 +260,7 @@ final class ChangeCollector
     }
 
     /** @param mixed $mapping array with Doctrine ORM 2, object with ORM 3 */
-    private static function fieldName(mixed $mapping): ?string
+    private function fieldName(mixed $mapping): ?string
     {
         if ($mapping instanceof AssociationMapping) {
             return $mapping->fieldName;
@@ -270,7 +270,7 @@ final class ChangeCollector
     }
 
     /** Decimal columns are hydrated as strings ("0.20000") while the application sets floats. */
-    private static function sameNumber(mixed $old, mixed $new): bool
+    private function sameNumber(mixed $old, mixed $new): bool
     {
         return is_numeric($old) && is_numeric($new) && (float) $old === (float) $new;
     }

@@ -51,7 +51,7 @@ final class PendingEntryTest extends TestCase
 
     public function testFinalizeResolvesReferencesInFieldChanges(): void
     {
-        $taxon = new ObjectReference(new \stdClass(), null, null);
+        $taxon = new ObjectReference(new \stdClass());
         $entry = $this->entry(AuditLogEntryInterface::ACTION_UPDATE);
         $entry->setFieldChange('mainTaxon', null, $taxon);
         $entry->setMaskedField('password');

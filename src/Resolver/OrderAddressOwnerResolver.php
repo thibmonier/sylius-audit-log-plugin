@@ -17,7 +17,7 @@ final class OrderAddressOwnerResolver implements OwnerResolverInterface
 {
     public function supports(object $entity, AuditedResource $resource): bool
     {
-        return $entity instanceof AddressInterface && null === $entity->getCustomer();
+        return $entity instanceof AddressInterface && !$entity->getCustomer() instanceof \Sylius\Component\Customer\Model\CustomerInterface;
     }
 
     public function resolve(object $entity, AuditedResource $resource, EntityManagerInterface $entityManager): ?object

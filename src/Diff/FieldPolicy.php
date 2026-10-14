@@ -26,12 +26,12 @@ final class FieldPolicy
         private readonly array $maskedFieldPatterns = [],
     ) {
         $this->ignored = array_fill_keys($ignoredFields, true);
-        $this->masked = array_fill_keys(array_map('strtolower', $maskedFields), true);
+        $this->masked = array_fill_keys(array_map(strtolower(...), $maskedFields), true);
     }
 
     public function isIgnored(string $field, ?AuditedResource $resource = null): bool
     {
-        return isset($this->ignored[$field]) || (null !== $resource && in_array($field, $resource->ignoredFields, true));
+        return isset($this->ignored[$field]) || ($resource instanceof \Tmonier\SyliusAuditLogPlugin\Resource\AuditedResource && in_array($field, $resource->ignoredFields, true));
     }
 
     public function isMasked(string $field): bool

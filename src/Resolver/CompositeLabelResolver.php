@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tmonier\SyliusAuditLogPlugin\Resolver;
 
 /** Asks the tagged resolvers in priority order; a failing resolver never breaks the audited flush. */
-final class CompositeLabelResolver implements LabelResolverInterface
+final readonly class CompositeLabelResolver implements LabelResolverInterface
 {
     public const MAX_LENGTH = 255;
 
     /** @param iterable<LabelResolverInterface> $resolvers */
-    public function __construct(private readonly iterable $resolvers)
+    public function __construct(private iterable $resolvers)
     {
     }
 

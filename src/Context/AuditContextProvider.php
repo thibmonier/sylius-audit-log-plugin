@@ -53,12 +53,12 @@ final class AuditContextProvider implements AuditContextProviderInterface, Reset
 
     public function getCommandName(): ?string
     {
-        return null === $this->requestStack->getMainRequest() ? $this->commandName : null;
+        return $this->requestStack->getMainRequest() instanceof \Symfony\Component\HttpFoundation\Request ? null : $this->commandName;
     }
 
     public function getSource(): string
     {
-        if (null === $this->requestStack->getMainRequest()) {
+        if (!$this->requestStack->getMainRequest() instanceof \Symfony\Component\HttpFoundation\Request) {
             return \PHP_SAPI === 'cli' ? AuditLogEntryInterface::SOURCE_CLI : AuditLogEntryInterface::SOURCE_OTHER;
         }
 
@@ -86,7 +86,7 @@ final class AuditContextProvider implements AuditContextProviderInterface, Reset
             $source,
             $this->resolveIp($request),
             $this->resolveRequestId($request),
-            null !== $request ? $this->routeOf($request) : $this->getCommandName(),
+            $request instanceof \Symfony\Component\HttpFoundation\Request ? $this->routeOf($request) : $this->getCommandName(),
         );
     }
 
@@ -119,7 +119,7 @@ final class AuditContextProvider implements AuditContextProviderInterface, Reset
 
     private function resolveIp(?Request $request): ?string
     {
-        if (!$this->storeIp || null === $request) {
+        if (!$this->storeIp || !$request instanceof \Symfony\Component\HttpFoundation\Request) {
             return null;
         }
 
@@ -133,14 +133,14 @@ final class AuditContextProvider implements AuditContextProviderInterface, Reset
 
     private function resolveRequestId(?Request $request): string
     {
-        if (null === $request) {
-            return $this->requestId ??= self::generateId();
+        if (!$request instanceof \Symfony\Component\HttpFoundation\Request) {
+            return $this->requestId ??= $this->generateId();
         }
 
         $id = $request->attributes->get(self::REQUEST_ID_ATTRIBUTE);
         if (!is_string($id)) {
             $header = $request->headers->get(self::REQUEST_ID_HEADER);
-            $id = null !== $header && 1 === preg_match('/^[A-Za-z0-9._\-]{8,64}$/', $header) ? $header : self::generateId();
+            $id = null !== $header && 1 === preg_match('/^[A-Za-z0-9._\-]{8,64}$/', $header) ? $header : $this->generateId();
             $request->attributes->set(self::REQUEST_ID_ATTRIBUTE, $id);
         }
 
@@ -159,7 +159,7 @@ final class AuditContextProvider implements AuditContextProviderInterface, Reset
         return is_int($id) ? $id : (is_numeric($id) ? (int) $id : null);
     }
 
-    private static function generateId(): string
+    private function generateId(): string
     {
         return bin2hex(random_bytes(16));
     }

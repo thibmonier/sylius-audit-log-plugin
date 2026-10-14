@@ -18,7 +18,7 @@ use Tmonier\SyliusAuditLogPlugin\Entity\AuditLogEntryInterface;
  * - other entries (orders...): the values of the personal fields;
  * - all of them: the IP address, and the actor name when the customer is the actor.
  */
-final class CustomerAuditLogAnonymizer
+final readonly class CustomerAuditLogAnonymizer
 {
     public const PLACEHOLDER = '[anonymized]';
 
@@ -28,10 +28,10 @@ final class CustomerAuditLogAnonymizer
      * @param list<string> $personalFields
      */
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly string $entryClass,
-        private readonly array $personalResources,
-        private readonly array $personalFields,
+        private EntityManagerInterface $entityManager,
+        private string $entryClass,
+        private array $personalResources,
+        private array $personalFields,
     ) {
     }
 
@@ -126,7 +126,7 @@ final class CustomerAuditLogAnonymizer
             $conditions->add($expr->andX('o.ownerType = :orderType', 'o.ownerId IN (:orderIds)'));
             $queryBuilder
                 ->setParameter('orderType', 'order')
-                ->setParameter('orderIds', array_map('strval', $orderIds))
+                ->setParameter('orderIds', array_map(strval(...), $orderIds))
             ;
         }
         if (null !== $email && '' !== $email) {
@@ -149,7 +149,7 @@ final class CustomerAuditLogAnonymizer
     {
         return match (true) {
             null === $value => null,
-            is_array($value) && array_is_list($value) => array_map(fn (mixed $item): mixed => $this->erase($item), $value),
+            is_array($value) && array_is_list($value) => array_map($this->erase(...), $value),
             is_array($value) => ['id' => $value['id'] ?? null, 'label' => self::PLACEHOLDER],
             default => self::PLACEHOLDER,
         };
